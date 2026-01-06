@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sodexo - dbt Platform Modernization | Data Strategy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fd6603 0%, #7b2de4 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #fd6603 0%, #7b2de4 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 3px solid #e0e0e0;
+            background: #f5f5f5;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -3px;
+            min-width: 140px;
+        }
+        
+        .tab-btn:hover {
+            background: #efefef;
+            color: #fd6603;
+        }
+        
+        .tab-btn.active {
+            color: #fd6603;
+            border-bottom-color: #fd6603;
+            background: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #fd6603;
+            padding-bottom: 10px;
+        }
+        
+        .stage-box {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #fd6603;
+        }
+        
+        .stage-box h3 {
+            color: #fd6603;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stage-icon {
+            background: #fd6603;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .stage-box p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .issue-box {
+            background: #fce4ec;
+            border-left: 4px solid #d32f2f;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #555;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .comparison-table thead {
+            background: linear-gradient(135deg, #fd6603 0%, #7b2de4 100%);
+            color: white;
+        }
+        
+        .comparison-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .current {
+            background: #ffe6e6;
+        }
+        
+        .future {
+            background: #e6f2ff;
+        }
+        
+        .tools-list {
+            list-style: none;
+            margin: 12px 0;
+        }
+        
+        .tools-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+        
+        .tools-list li:before {
+            content: "→ ";
+            color: #fd6603;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .value-card {
+            background: linear-gradient(135deg, #fd6603 0%, #7b2de4 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .value-card h4 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .value-card .value {
+            font-size: 2em;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+        
+        .roi-item {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #fd6603;
+        }
+        
+        .roi-item strong {
+            color: #fd6603;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .benefit-box {
+            background: #e8f5e9;
+            border-left: 4px solid #2e7d32;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        
+        .benefit-box strong {
+            color: #2e7d32;
+        }
+
+        .challenge-box {
+            background: #ffebee;
+            border-left: 4px solid #d32f2f;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .challenge-box strong {
+            color: #d32f2f;
+        }
+        
+        .footer {
+            background: #f5f5f5;
+            color: #666;
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        a {
+            color: #fd6603;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: #7b2de4;
+        }
+
+        .highlight {
+            color: #fd6603;
+            font-weight: 600;
+        }
+
+        .highlight-success {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .metric-box {
+            background: white;
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 4px solid #fd6603;
+        }
+
+        .metric-box strong {
+            color: #fd6603;
+            font-size: 1.1em;
+        }
+
+        .metric-box .value {
+            font-size: 1.8em;
+            color: #fd6603;
+            margin: 10px 0;
+        }
+
+        .metric-box p {
+            color: #666;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .process-step {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #fd6603;
+            border: 1px solid #e0e0e0;
+            border-left: 5px solid #fd6603;
+        }
+
+        .process-step.current {
+            border-left-color: #d32f2f;
+            background: #ffe6e6;
+        }
+
+        .process-step.future {
+            border-left-color: #2e7d32;
+            background: #e8f5e9;
+        }
+
+        .roadmap-phase {
+            background: linear-gradient(135deg, #fd6603 0%, #7b2de4 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .roadmap-phase h4 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .roadmap-phase ul {
+            list-style: none;
+        }
+
+        .roadmap-phase li {
+            padding: 8px 0;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .roadmap-phase li:before {
+            content: "✓ ";
+            color: #fff;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .tab-btn {
+                min-width: 120px;
+                padding: 12px;
+                font-size: 0.85em;
+            }
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Sodexo - Data Modernization with dbt Platform</h1>
+            <p>Strategic Assessment & Transformation Roadmap</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('context')">Current Context</button>
+            <button class="tab-btn" onclick="switchTab('challenges')">Challenges</button>
+            <button class="tab-btn" onclick="switchTab('solution')">dbt Solution</button>
+            <button class="tab-btn" onclick="switchTab('process')">Process Evolution</button>
+            <button class="tab-btn" onclick="switchTab('value')">Three Pillars</button>
+            <button class="tab-btn" onclick="switchTab('cases')">Customer Cases</button>
+            <button class="tab-btn" onclick="switchTab('roadmap')">Roadmap</button>
+        </div>
+
+        <!-- TAB 1: CONTEXT -->
+        <div id="context" class="tab-content active">
+            <h2 class="section-title">📍 Sodexo's Current State</h2>
+            
+            <div class="stage-box">
+                <h3><span class="stage-icon">1</span> Organization & Team</h3>
+                <ul class="tools-list">
+                    <li><strong>4 Active Data Products</strong> using dbt Core (Foresight, Pricing, PowerShift, others)</li>
+                    <li><strong>8-10 people</strong> actively working with data transformation</li>
+                    <li><strong>Mix of roles:</strong> Data Engineers, Analysts, newly-defined Analytics Engineers</li>
+                    <li><strong>Transition:</strong> From PySpark to dbt Core for transformation logic</li>
+                </ul>
+            </div>
+
+            <div class="stage-box">
+                <h3><span class="stage-icon">2</span> Current Infrastructure Stack</h3>
+                <ul class="tools-list">
+                    <li><strong>Data Platform:</strong> Databricks on Azure</li>
+                    <li><strong>Orchestration:</strong> Azure Data Factory (ADF)</li>
+                    <li><strong>Analytics Layer:</strong> Power BI dashboards for business users</li>
+                    <li><strong>ML Integration:</strong> Azure Machine Learning Services</li>
+                    <li><strong>Cost Impact:</strong> 18% of cloud spending on Databricks, 27% on general compute</li>
+                </ul>
+            </div>
+
+            <div class="stage-box">
+                <h3><span class="stage-icon">3</span> Current Transformation Approach</h3>
+                <ul class="tools-list">
+                    <li><strong>dbt Core Open Source:</strong> Self-managed, no commercial support layer</li>
+                    <li><strong>Manual Orchestration:</strong> ADF handles scheduling and dependencies</li>
+                    <li><strong>CI/CD Limitations:</strong> No smart run strategy (full pipeline run on every change)</li>
+                    <li><strong>Testing Gaps:</strong> Limited test coverage, quality issues discovered in production</li>
+                    <li><strong>Data Quality:</strong> Multi-department challenge; reactive detection after processing</li>
+                </ul>
+            </div>
+
+            <div class="stage-box">
+                <h3><span class="stage-icon">4</span> Team Allocation & Capacity</h3>
+                <p><strong>Where does the team spend their time?</strong></p>
+                <ul class="tools-list">
+                    <li><strong>Development:</strong> 20% (Data Engineers) / 30% (Data Analysts)</li>
+                    <li><strong>Maintenance & Incident Management:</strong> 50%</li>
+                    <li><strong>Data Quality Rework & Troubleshooting:</strong> 20-25%</li>
+                </ul>
+                <p style="margin-top: 15px; color: #d32f2f; font-weight: 600;">⚠️ Only ~20-30% of capacity goes to new data products</p>
+            </div>
+
+            <div class="stage-box">
+                <h3><span class="stage-icon">5</span> Strategic Context</h3>
+                <ul class="tools-list">
+                    <li><strong>Organization:</strong> Large international company (Sodexo Group) with multi-acquisitions</li>
+                    <li><strong>Scope:</strong> Digital & AI teams only (broader organization may have different stacks)</li>
+                    <li><strong>Target 2026 Objectives:</strong> Deliver faster, with higher quality, at lower cost</li>
+                    <li><strong>Growth Vision:</strong> Scale data platform across more use cases and teams</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TAB 2: CHALLENGES -->
+        <div id="challenges" class="tab-content">
+            <h2 class="section-title">⚠️ Critical Challenges & Pain Points</h2>
+            
+            <div class="challenge-box">
+                <strong>1️⃣ CI/CD & Deployment Risk</strong><br>
+                Unable to run targeted transformations; must execute full pipeline on every commit change → inefficiency, wasted compute, longer feedback cycles
+            </div>
+
+            <div class="challenge-box">
+                <strong>2️⃣ Data Quality Issues Caught Too Late</strong><br>
+                Tests only run after full data processing → bugs discovered in production → business impact → costly rework
+            </div>
+
+            <div class="challenge-box">
+                <strong>3️⃣ Long Time-to-Market</strong><br>
+                Complex requirements gathering + back-and-forth with business → frequent rework → extended timelines (weeks not days)
+            </div>
+
+            <div class="challenge-box">
+                <strong>4️⃣ Data Access Bottleneck</strong><br>
+                Waiting for upstream teams to provide clean data → forced to ingest data directly → disconnected from centralized data strategy
+            </div>
+
+            <div class="challenge-box">
+                <strong>5️⃣ Troubleshooting Inefficiency</strong><br>
+                Hard to diagnose where issues originate → long debugging cycles → depends on manual investigation and data engineering time
+            </div>
+
+            <div class="challenge-box">
+                <strong>6️⃣ Cost Visibility & Optimization</strong><br>
+                Significant Databricks spend (18% of cloud budget) → limited insight into which transformations drive cost → no intelligent skip-if-unchanged logic
+            </div>
+
+            <h3 style="margin-top: 30px; margin-bottom: 20px; color: #fd6603;">📊 Current State vs. Desired State</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th class="current">Today (dbt Core Only)</th>
+                        <th class="future">With dbt Platform</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>CI/CD Testing</strong></td>
+                        <td class="current">Full pipeline run (slow)</td>
+                        <td class="future">Smart CI on changed models only (fast)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test Coverage</strong></td>
+                        <td class="current">Incomplete, gaps in business logic</td>
+                        <td class="future">100% coverage with contracts & freshness</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Time-to-Market</strong></td>
+                        <td class="current">2-4 weeks (with rework)</td>
+                        <td class="future">2-3 days (rapid iteration)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Troubleshooting Time</strong></td>
+                        <td class="current">Hours (lineage unclear)</td>
+                        <td class="future">Minutes (lineage auto-generated)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Quality Issues/Year</strong></td>
+                        <td class="current">Multiple incidents (reactive)</td>
+                        <td class="future">30-80% reduction (proactive detection)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Compute Cost Optimization</strong></td>
+                        <td class="current">Limited visibility</td>
+                        <td class="future">-15-25% via state-aware orchestration</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 35px; margin-bottom: 20px; color: #fd6603;">📈 Why This Matters</h3>
+            <div class="benefit-box" style="background: #fff3e0; border-left-color: #fd6603;">
+                <strong style="color: #fd6603;">Impact on Business Velocity:</strong><br>
+                • 2-4 weeks per feature slows down digital innovation<br>
+                • Data issues cascade into business decisions → wrong ML models, inaccurate dashboards<br>
+                • Team burnout: 50% of time on maintenance, not innovation<br>
+                • Scaling becomes harder with each new data product
+            </div>
+        </div>
+
+        <!-- TAB 3: SOLUTION -->
+        <div id="solution" class="tab-content">
+            <h2 class="section-title">🏗️ dbt Platform - The Solution Architecture</h2>
+            
+            <div class="stage-box">
+                <h3><span class="stage-icon">1</span> What is dbt Platform?</h3>
+                <p><strong>dbt Platform is a complete operating system for data transformation:</strong></p>
+                <ul class="tools-list">
+                    <li><strong>dbt Cloud IDE:</strong> Git-connected, cloud-based development environment</li>
+                    <li><strong>Smart Orchestration:</strong> State-aware (only run what changed)</li>
+                    <li><strong>CI/CD Pipeline:</strong> Automated testing, staging, approval gates</li>
+                    <li><strong>Semantic Layer:</strong> Business metrics exposed to analytics tools</li>
+                    <li><strong>Observability & Lineage:</strong> Auto-generated data catalog with column-level lineage</li>
+                    <li><strong>Cost Intelligence:</strong> Clear visibility into compute costs by project & team</li>
+                </ul>
+            </div>
+
+            <div class="stage-box">
+                <h3><span class="stage-icon">2</span> How dbt Solves Sodexo's Challenges</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Challenge</th>
+                            <th class="current">Today (Pain)</th>
+                            <th class="future">dbt Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CI/CD Limitations</strong></td>
+                            <td class="current">Full runs every commit</td>
+                            <td class="future">✅ Smart CI: test only changed models + downstream</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Quality</strong></td>
+                            <td class="current">Tests run post-processing (too late)</td>
+                            <td class="future">✅ Tests run with every commit (before deployment)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Time-to-Market</strong></td>
+                            <td class="current">Complex requirements, rework loops</td>
+                            <td class="future">✅ Automated documentation, lineage visualization</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Troubleshooting</strong></td>
+                            <td class="current">Manual investigation (hours)</td>
+                            <td class="future">✅ Auto-generated lineage, root cause analysis</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cost Visibility</strong></td>
+                            <td class="current">Unknown cost drivers</td>
+                            <td class="future">✅ Cost monitoring, state-aware skip-if-unchanged</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Team Scaling</strong></td>
+                            <td class="current">Manual processes, training curve</td>
+                            <td class="future">✅ Standardized workflows, knowledge sharing</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="stage-box">
+                <h3><span class="stage-icon">3</span> Key Principles of dbt Platform</h3>
+                <ul class="tools-list">
+                    <li><strong>Code-First & Git-Native:</strong> All transformation logic versioned on GitHub (transparent, auditable, compliant)</li>
+                    <li><strong>Systematic Testing:</strong> Quality gates built into development workflow, not post-deployment</li>
+                    <li><strong>State-Aware Orchestration:</strong> Only recalculate what changed (10-20%+ savings in compute costs)</li>
+                    <li><strong>Multi-Warehouse Flexibility:</strong> No vendor lock-in; code works on Snowflake, BigQuery, Databricks, etc.</li>
+                    <li><strong>Built-in Governance:</strong> Lineage, contracts, freshness, testing = trust signals for stakeholders</li>
+                </ul>
+            </div>
+
+            <div class="stage-box">
+                <h3><span class="stage-icon">4</span> Integration with Sodexo's Current Stack</h3>
+                <ul class="tools-list">
+                    <li><strong>Databricks:</strong> dbt natively supports Databricks (Unity Catalog compatible)</li>
+                    <li><strong>Azure Data Factory:</strong> dbt jobs can be triggered from ADF orchestration (no replacement needed)</li>
+                    <li><strong>Power BI:</strong> Semantic Layer exposes metrics directly to BI tools</li>
+                    <li><strong>Azure ML:</strong> Can coordinate data pipelines before ML model training</li>
+                    <li><strong>No Rip-and-Replace:</strong> Sits on top of existing infrastructure, not replacing it</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TAB 4: PROCESS EVOLUTION -->
+        <div id="process" class="tab-content">
+            <h2 class="section-title">🔄 Process Evolution: Before vs. After dbt</h2>
+            
+            <h3 style="margin-bottom: 20px; color: #d32f2f;">❌ TODAY'S PROCESS (dbt Core Only)</h3>
+            
+            <div class="process-step current">
+                <h3><span class="stage-icon" style="background: #d32f2f;">1</span> Requirements Gathering</h3>
+                <p>Business sends request → unclear specs → back-and-forth discussions → takes 1+ week</p>
+            </div>
+
+            <div class="process-step current">
+                <h3><span class="stage-icon" style="background: #d32f2f;">2</span> Data Model Design</h3>
+                <p>Data Engineer proposes design → documented in Word/Excel (often incomplete) → informal validation</p>
+            </div>
+
+            <div class="process-step current">
+                <h3><span class="stage-icon" style="background: #d32f2f;">3</span> Development</h3>
+                <p>Engineer writes dbt code + SQL → limited testing → ships to dev/staging</p>
+            </div>
+
+            <div class="process-step current">
+                <h3><span class="stage-icon" style="background: #d32f2f;">4</span> Manual Testing</h3>
+                <p>❌ Run manually → check results in Excel → incomplete coverage → bugs escape to production</p>
+            </div>
+
+            <div class="process-step current">
+                <h3><span class="stage-icon" style="background: #d32f2f;">5</span> Documentation (Often Skipped)</h3>
+                <p>❌ Manual documentation in Word/Sharepoint → becomes outdated → doesn't match code</p>
+            </div>
+
+            <div class="process-step current">
+                <h3><span class="stage-icon" style="background: #d32f2f;">6</span> Deployment & Monitoring</h3>
+                <p>Full orchestration run → issues caught in production → costly rework and debugging</p>
+            </div>
+
+            <div class="issue-box" style="background: #ffebee; border-left-color: #d32f2f; margin-top: 25px;">
+                <strong>⏱️ TIMELINE: 2-4 WEEKS</strong> (plus rework when issues arise)<br>
+                Slow time-to-value. Team reactive, not proactive.
+            </div>
+
+            <hr style="margin: 40px 0; border: 2px dashed #fd6603;">
+
+            <h3 style="margin-top: 30px; margin-bottom: 20px; color: #2e7d32;">✅ WITH DBT PLATFORM</h3>
+            
+            <div class="process-step future">
+                <h3 style="color: #2e7d32;"><span class="stage-icon" style="background: #2e7d32;">1</span> Clear Requirements + Template</h3>
+                <p>✅ GitHub Issue template → standardized specs (source, rules, SLA) → clear upfront</p>
+            </div>
+
+            <div class="process-step future">
+                <h3 style="color: #2e7d32;"><span class="stage-icon" style="background: #2e7d32;">2</span> Rapid Design</h3>
+                <p>✅ Engineer reviews spec in 15-20 min → proposes SQL solution → ready for code review</p>
+            </div>
+
+            <div class="process-step future">
+                <h3 style="color: #2e7d32;"><span class="stage-icon" style="background: #2e7d32;">3</span> Development + Testing</h3>
+                <p>✅ Writes SQL + YAML + tests in same PR → dbt parses syntax → tests included from start</p>
+            </div>
+
+            <div class="process-step future">
+                <h3 style="color: #2e7d32;"><span class="stage-icon" style="background: #2e7d32;">4</span> Code Review + CI</h3>
+                <p>✅ Pull Request → peer review → automated CI pipeline (tests, lineage check) → 2-3 min</p>
+            </div>
+
+            <div class="process-step future">
+                <h3 style="color: #2e7d32;"><span class="stage-icon" style="background: #2e7d32;">5</span> Auto-Documentation</h3>
+                <p>✅ Merge → dbt Explorer generates catalog + lineage → always in sync, no manual effort</p>
+            </div>
+
+            <div class="process-step future">
+                <h3 style="color: #2e7d32;"><span class="stage-icon" style="background: #2e7d32;">6</span> Safe Deployment</h3>
+                <p>✅ dbt Compare validates production data integrity → state-aware orchestration → low risk, instant feedback</p>
+            </div>
+
+            <div class="benefit-box" style="background: #e8f5e9; border-left-color: #2e7d32; margin-top: 25px;">
+                <strong>⏱️ TIMELINE: 2-3 DAYS</strong><br>
+                <strong>10x faster</strong> (14 days → 2-3 days)<br>
+                Team proactive: business gets reliable data quickly
+            </div>
+
+            <h3 style="margin-top: 35px; margin-bottom: 20px; color: #fd6603;">📋 Step-by-Step Comparison Table</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">Step</th>
+                        <th class="current" style="width: 40%;">Today (Manual)</th>
+                        <th class="future" style="width: 40%;">With dbt Platform</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Requirements</strong></td>
+                        <td class="current">1 week, unclear specs</td>
+                        <td class="future">✅ Template, 1-2 days, clear</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Design</strong></td>
+                        <td class="current">2-3 days, Word doc</td>
+                        <td class="future">✅ 15-20 min, SQL transparent</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Development</strong></td>
+                        <td class="current">3-4 days, no tests</td>
+                        <td class="future">✅ 30-45 min, tests included</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Code Review</strong></td>
+                        <td class="current">❌ Informal or skipped</td>
+                        <td class="future">✅ PR mandatory, lineage visual</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Testing</strong></td>
+                        <td class="current">1-2 days manual, incomplete</td>
+                        <td class="future">✅ 2-3 min auto, 100% coverage</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Documentation</strong></td>
+                        <td class="current">2-3 days (manual), often skipped</td>
+                        <td class="future">✅ Auto-generated, always in sync</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Deployment</strong></td>
+                        <td class="current">1 week manual, risk HIGH</td>
+                        <td class="future">✅ 5-10 min auto, risk LOW</td>
+                    </tr>
+                    <tr style="background: #f0f4ff; font-weight: 700; border-top: 2px solid #fd6603;">
+                        <td><strong>TOTAL</strong></td>
+                        <td class="current"><strong>2-4 WEEKS</strong></td>
+                        <td class="future"><strong>✅ 2-3 DAYS</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB 5: THREE PILLARS -->
+        <div id="value" class="tab-content">
+            <h2 class="section-title">💎 Three Pillars of dbt Platform Value</h2>
+            
+            <p style="margin-bottom: 25px; font-size: 1.05em; color: #333;">dbt Platform delivers measurable business value across three strategic areas:</p>
+
+            <div class="grid-3">
+                <div class="value-card">
+                    <h4>⚡ Data Productivity</h4>
+                    <div class="value">30–50%</div>
+                    <p>Improvement in data velocity & team output</p>
+                </div>
+                <div class="value-card">
+                    <h4>✓ Data Quality</h4>
+                    <div class="value">30–80%+</div>
+                    <p>Reduction in quality issues & rework</p>
+                </div>
+                <div class="value-card">
+                    <h4>💰 Cost Optimization</h4>
+                    <div class="value">10–20%+</div>
+                    <p>Savings on data platform compute</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 40px; margin-bottom: 20px; color: #fd6603;">1️⃣ Data Productivity: Ship Data Products Faster</h3>
+
+            <div class="stage-box">
+                <h4 style="color: #fd6603; margin-bottom: 12px;">How dbt Accelerates Delivery</h4>
+                <ul class="tools-list">
+                    <li><strong>Unified Control Plane:</strong> Single source of truth for all transformation logic, testing, documentation</li>
+                    <li><strong>Cloud IDE + Git:</strong> Engineers & analysts collaborate in parallel with proper version control</li>
+                    <li><strong>AI-Assisted Development:</strong> Code generation & test scaffolding reduce boilerplate</li>
+                    <li><strong>Reusable Macros & Packages:</strong> Avoid code duplication across projects</li>
+                    <li><strong>Auto-Generated Documentation:</strong> Lineage, impact analysis generated from code (no manual work)</li>
+                </ul>
+            </div>
+
+            <div class="stage-box">
+                <h4 style="color: #fd6603; margin-bottom: 12px;">Impact for Sodexo</h4>
+                <ul class="tools-list">
+                    <li><strong>Time-to-Market:</strong> 2-4 weeks → 2-3 days (10x faster)</li>
+                    <li><strong>Reduced Rework:</strong> Clear lineage & impact analysis prevent misalignment surprises</li>
+                    <li><strong>Knowledge Sharing:</strong> New analytics engineers onboard faster with auto-generated documentation</li>
+                    <li><strong>Scaling:</strong> Standardized workflows scale to more data products without proportional team growth</li>
+                </ul>
+            </div>
+
+            <h3 style="margin-top: 35px; margin-bottom: 20px; color: #fd6603;">2️⃣ Data Quality: Trust in Every Dataset</h3>
+
+            <div class="stage-box">
+                <h4 style="color: #fd6603; margin-bottom: 12px;">How dbt Ensures Quality</h4>
+                <ul class="tools-list">
+                    <li><strong>Tests Run with Every Commit:</strong> Catch issues before deployment, not after</li>
+                    <li><strong>Data Contracts:</strong> Define expected schema & quality expectations upfront</li>
+                    <li><strong>Source Freshness Monitoring:</strong> Auto-detect stale or missing upstream data</li>
+                    <li><strong>Column-Level Observability:</strong> Monitor distribution, nulls, uniqueness in near-real-time</li>
+                    <li><strong>Smart Alerts:</strong> Failures block bad data from propagating; clear notifications to stakeholders</li>
+                </ul>
+            </div>
+
+            <div class="stage-box">
+                <h4 style="color: #fd6603; margin-bottom: 12px;">Impact for Sodexo</h4>
+                <ul class="tools-list">
+                    <li><strong>Early Detection:</strong> Catch data quality issues before processing, not after</li>
+                    <li><strong>Multi-Department Visibility:</strong> Lineage shows which upstream team introduced the issue</li>
+                    <li><strong>GenAI Readiness:</strong> High-quality data = confident AI/ML pipelines (example: TF1 enabled GenAI after dbt adoption)</li>
+                    <li><strong>Business Confidence:</strong> Power BI dashboards built on quality-tested data = stakeholders trust metrics</li>
+                    <li><strong>Fewer Incidents:</strong> 30-80% reduction in data quality issues (TF1: 268 → 3 errors/year)</li>
+                </ul>
+            </div>
+
+            <h3 style="margin-top: 35px; margin-bottom: 20px; color: #fd6603;">3️⃣ Cost Optimization: Run Only What Matters</h3>
+
+            <div class="stage-box">
+                <h4 style="color: #fd6603; margin-bottom: 12px;">How dbt Reduces Compute Costs</h4>
+                <ul class="tools-list">
+                    <li><strong>State-Aware Orchestration:</strong> Analyze which sources changed since last run; skip transformations if output unchanged</li>
+                    <li><strong>Intelligent Dependency Resolution:</strong> Run independent models in parallel, not sequentially</li>
+                    <li><strong>Smart CI:</strong> In PR validation, test only changed models + downstream on sample data (faster feedback)</li>
+                    <li><strong>Cost Visibility Dashboard:</strong> See which teams, projects, models consume most compute</li>
+                    <li><strong>No Redundant Runs:</strong> Skip full orchestration when nothing has changed (15-25% cost savings)</li>
+                </ul>
+            </div>
+
+            <div class="stage-box">
+                <h4 style="color: #fd6603; margin-bottom: 12px;">Impact for Sodexo</h4>
+                <ul class="tools-list">
+                    <li><strong>Databricks Cost Reduction:</strong> 10-20%+ savings (Sodexo currently spends 40k€/year on Snowflake equivalent)</li>
+                    <li><strong>Cost Accountability:</strong> See which business units drive the highest infrastructure spend</li>
+                    <li><strong>Faster Debugging:</strong> Reduced compute overhead = lower cost per incident investigation</li>
+                    <li><strong>Foundation for Scaling:</strong> Can add more data products without proportional cost increases</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TAB 6: CUSTOMER CASES -->
+        <div id="cases" class="tab-content">
+            <h2 class="section-title">🎯 Customer Success Stories - Proof Points</h2>
+
+            <div class="stage-box">
+                <h3><span class="stage-icon">1</span> TF1 (French Media & Broadcasting)</h3>
+                <p><strong>Situation:</strong> High-volume data pipelines; frequent quality issues; manual documentation and lineage tracking</p>
+                <p><strong>Solution:</strong> Adopted dbt Platform for unified transformation, testing, and orchestration</p>
+                <div class="benefit-box" style="margin-top: 15px;">
+                    <strong>✅ Results:</strong><br>
+                    • <span class="highlight">25% productivity gain</span> — CI/CD automation freed up engineering time<br>
+                    • <span class="highlight">268 → 3 data quality errors/year</span> (98%+ reduction)<br>
+                    • <span class="highlight">Enabled GenAI adoption</span> — high-quality data pipelines required for confident ML<br>
+                    • <span class="highlight">Faster debugging</span> — auto-generated lineage reduced troubleshooting time
+                </div>
+            </div>
+
+            <div class="stage-box">
+                <h3><span class="stage-icon">2</span> Multi-Country Enterprise (Acquisition Scenario)</h3>
+                <p><strong>Situation:</strong> Acquisition-driven data stack sprawl; multiple data warehouses; inconsistent data quality across regions</p>
+                <p><strong>Solution:</strong> dbt Platform as universal data modeling layer across Snowflake, Databricks, Synapse</p>
+                <div class="benefit-box" style="margin-top: 15px;">
+                    <strong>✅ Results:</strong><br>
+                    • <span class="highlight">30–50%+ improvement in data velocity</span><br>
+                    • <span class="highlight">10–20%+ reduction in compute costs</span> (state-aware optimization)<br>
+                    • <span class="highlight">Unified governance</span> across all regional data platforms<br>
+                    • <span class="highlight">Standardized workflows</span> despite different underlying warehouses
+                </div>
+            </div>
+
+            <div class="stage-box">
+                <h3><span class="stage-icon">3</span> Engie (Energy & Utilities)</h3>
+                <p><strong>Situation:</strong> €4M+ annual data platform spend; inefficient compute utilization; no clear cost visibility</p>
+                <p><strong>Solution:</strong> dbt Platform for cost-optimized, state-aware orchestration</p>
+                <div class="benefit-box" style="margin-top: 15px;">
+                    <strong>✅ Results:</strong><br>
+                    • <span class="highlight">10–20%+ reduction in compute costs</span> through intelligent execution<br>
+                    • <span class="highlight">Clear cost allocation by business unit</span> (chargeback model)<br>
+                    • <span class="highlight">CFO visibility</span> into data platform ROI and spend accountability
+                </div>
+            </div>
+
+            <h3 style="margin-top: 35px; margin-bottom: 20px; color: #fd6603;">🔗 Common Themes Across Customers</h3>
+            <div class="benefit-box">
+                ✅ <strong>Velocity Gains:</strong> 30-50% faster delivery of data products<br>
+                ✅ <strong>Quality Improvements:</strong> 30-80%+ fewer data quality issues<br>
+                ✅ <strong>Cost Savings:</strong> 10-20%+ reduction in infrastructure spend<br>
+                ✅ <strong>Team Capability:</strong> Better hiring, faster onboarding, more autonomy<br>
+                ✅ <strong>Business Trust:</strong> Stakeholders confident in data quality and speed of insights
+            </div>
+
+            <h3 style="margin-top: 35px; margin-bottom: 20px; color: #fd6603;">💡 Why These Results Matter for Sodexo</h3>
+            <ul class="tools-list">
+                <li><strong>TF1 Quality Case:</strong> Sodexo faces similar multi-department data quality challenges (as discussed). dbt's early detection prevents issues before they hit Power BI dashboards or Forsight metrics.</li>
+                <li><strong>Multi-Warehouse Scenario:</strong> Sodexo's Group-level data strategy may evolve beyond Databricks. dbt's portability (BigQuery, Synapse, Redshift) provides strategic flexibility.</li>
+                <li><strong>Engie Cost Case:</strong> Sodexo's 18-27% cloud spend on compute is significant. Even 10-20% savings = €40-60k/year in infrastructure costs.</li>
+            </ul>
+        </div>
+
+        <!-- TAB 7: ROADMAP -->
+        <div id="roadmap" class="tab-content">
+            <h2 class="section-title">🗺️ High-Level Roadmap: Path to Value</h2>
+            
+            <p style="margin-bottom: 25px; font-size: 1.05em; color: #333;">Phased approach to modernize data platform, with value delivered at each stage:</p>
+
+            <div class="roadmap-phase">
+                <h4>📋 Phase 1: Foundation & Validation</h4>
+                <ul>
+                    <li>Assessment of current dbt Core usage and Databricks infrastructure</li>
+                    <li>Identify quick wins (highest-value first project)</li>
+                    <li>Set up dbt Cloud environment & CI/CD pipeline</li>
+                    <li>Team training on dbt Platform best practices</li>
+                    <li>Deliverable: Proof of value with 1-2 pilot projects</li>
+                </ul>
+            </div>
+
+            <div class="roadmap-phase">
+                <h4>🚀 Phase 2: Optimization & Scaling</h4>
+                <ul>
+                    <li>Enable state-aware orchestration & cost monitoring</li>
+                    <li>Migrate remaining 2-3 data products to dbt Cloud</li>
+                    <li>Implement data contracts & freshness monitoring</li>
+                    <li>Automate documentation & governance</li>
+                    <li>Integrate Semantic Layer with Power BI for self-service analytics</li>
+                </ul>
+            </div>
+
+            <div class="roadmap-phase">
+                <h4>🎯 Phase 3: Enterprise Scaling</h4>
+                <ul>
+                    <li>Integration with Azure Data Factory for multi-step orchestration</li>
+                    <li>Enable multi-team collaboration with RBAC & governance</li>
+                    <li>Cost accountability model (chargeback by business unit)</li>
+                    <li>Support GenAI/ML pipelines with high-quality data foundation</li>
+                    <li>Foundation for scaling across broader Sodexo organization</li>
+                </ul>
+            </div>
+
+            <h3 style="margin-top: 35px; margin-bottom: 20px; color: #fd6603;">✅ Success Metrics & Targets</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Target</th>
+                        <th>Baseline</th>
+                        <th>Improvement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Time-to-Market</strong></td>
+                        <td class="future">2-3 days</td>
+                        <td class="current">2-4 weeks</td>
+                        <td><strong>10x faster</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Troubleshooting Time</strong></td>
+                        <td class="future">&lt;20 minutes</td>
+                        <td class="current">1-2 hours</td>
+                        <td><strong>5-10x faster</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test Coverage</strong></td>
+                        <td class="future">100%</td>
+                        <td class="current">&lt;50%</td>
+                        <td><strong>2x improvement</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Quality Issues/Year</strong></td>
+                        <td class="future">-60% minimum</td>
+                        <td class="current">Baseline</td>
+                        <td><strong>60%+ reduction</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Databricks Cost</strong></td>
+                        <td class="future">-15%+ (Y1)</td>
+                        <td class="current">€40k baseline</td>
+                        <td><strong>€6-8k savings</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Team Productivity</strong></td>
+                        <td class="future">30-50% gain</td>
+                        <td class="current">20-30% on dev</td>
+                        <td><strong>Shift to innovation</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 35px; margin-bottom: 20px; color: #fd6603;">🎯 Next Steps</h3>
+            <div class="benefit-box" style="background: #fff3e0; border-left-color: #fd6603;">
+                <strong>Proposed Action Plan:</strong><br><br>
+                <strong>1. Tailor-made Technical Demo (1.5 hours)</strong><br>
+                Live walkthrough of dbt Platform with Sodexo use cases (Foresight, DataFeed). Show:<br>
+                • CI/CD & Smart Orchestration with cost insights<br>
+                • Data Quality monitoring & testing<br>
+                • Semantic Layer + self-service analytics<br>
+                • Integration with Databricks & ADF<br><br>
+
+                <strong>2. Customized Value Assessment</strong><br>
+                Quantify productivity gains, cost savings, quality improvements specific to Sodexo<br><br>
+
+                <strong>3. Pilot Project Roadmap</strong><br>
+                Plan 6-8 week pilot with 1-2 highest-value data products<br><br>
+
+                <strong>4. Business Case & Approval</strong><br>
+                Present ROI, risk mitigation, success criteria to stakeholders
+            </div>
+
+            <div class="benefit-box" style="margin-top: 20px;">
+                <strong style="color: #2e7d32;">✅ Recommended Meeting Schedule:</strong><br>
+                🗓️ <span class="highlight">January 8, 2026 (Early Next Week)</span> - Technical Demo (1.5h)<br>
+                • Invite all developers using dbt Core + key stakeholders<br>
+                • Show live platform capabilities aligned with Sodexo challenges<br>
+                • Open Q&A to address team concerns
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <strong>Charlotte Lefevre</strong> | Solution Architect, dbt Labs<br>
+        Strategic Assessment for Sodexo Digital & AI | January 2026
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active from all buttons
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active to clicked button
+            event.target.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
